@@ -70,14 +70,22 @@ describe('total likes',() => {
       })
 })
 
-describe('The blog has the most likes',() => {
+describe('The most',() => {
     const favBlog={
         title: "Canonical string reduction",
         author: "Edsger W. Dijkstra",
         likes: 12,
     }
+    const mostAuthor={
+        author: "Robert C. Martin",
+        blogs : 3
+    }
     test('Find the fav blog', () => {
         const result = listHelper.favoriteBlog(blogs)
         assert.deepStrictEqual(result,favBlog)
+    })
+    test ('Find who has the most amount of blog',() => {
+        const result =listHelper.mostBlogs(blogs)
+        assert.deepStrictEqual(result,mostAuthor)
     })
 })
