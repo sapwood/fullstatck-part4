@@ -124,6 +124,16 @@ test.only('Test likes value', async () => {
 
 })
 
+test.only('Test missing title and url', async () => {
+    const blog = {    
+        author: "Brian",             
+    }
+    await api.post('/api/blogs')
+            .send(blog)
+            .expect(400)
+
+})
+
 after (async () => {
     await mongoose.connection.close()
 })

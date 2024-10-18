@@ -10,6 +10,11 @@ route.get('/', async (request, response) => {
   
 route.post('/', async (request, response) => {
     const { title, author, url, likes } = request.body  
+
+    if (!(title&&url)){
+      return response.status(400).end()
+    }
+    
     modifiedLikes = likes !== undefined ? likes : 0
     
     newBlog ={
