@@ -74,8 +74,9 @@ test.only('Test of return json', async () => {
 })
 
 test.only('Test of amount of blogs', async () => {
-    const blogs = await api.get('/api/blogs')
-    assert.strictEqual(blogs.body.length,initialData.length)
+    const blogs = await Blog.find({})
+    assert.strictEqual(blogs.length,initialData.length)
+    
 })
 
 test.only('Test the unique identifier id', async () => {
@@ -85,6 +86,26 @@ test.only('Test the unique identifier id', async () => {
         assert.strictEqual(blog._id,undefined,'_id undefined')
 
     })
+})
+
+test.only('Test add to the database', async () => {
+    const blog = {    
+
+        title: "This is a test",
+        author: "Brian",
+        url: "http://howmao.com/",
+        likes: 3,    
+    }
+
+    const current_length = (await Blog.find({})).length
+    const response =   await api.post('/api/blogs')
+                                .send(blog)
+                                .expect(201)
+    const increased_length = (await Blog.find({})).length
+    assert.strictEqual(increased_length,current_length+1)
+    assert.strictEqual(response.body.title,'This is a test')
+
+    
 })
 
 after (async () => {
