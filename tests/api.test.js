@@ -65,11 +65,10 @@ beforeEach (async () => {
 })  
 
 test.only('Test of return json', async () => {
-    const response = await api.get('/api/blogs')
-    
-    assert (response.status,200)
-    console.log(`the headers are ${response.headers['content-type']}`)
-    assert(response.headers['content-type'],/Application\/Json/)
+    await api.get('/api/blogs')
+            .expect(200)
+            .expect('Content-Type',/application\/json/)
+
 
 })
 
@@ -138,6 +137,21 @@ test.only('Test delete from database', async () => {
     const id = '5a422ba71b54a676234d17fb'
     await api.delete(`/api/blogs/${id}`)
             .expect(204)
+})
+
+test.only('Test update database', async () => {
+    const updateBlog = {
+        id: "5a422a851b54a676234d17f7",
+        title: "React patterns",
+        author: "Michael Chan",
+        url: "https://reactpatterns.com/",
+        likes: 7,
+    }
+    const updated = await api.put(`/api/blogs/${updateBlog.id}`)
+                            .send(updateBlog)
+
+   
+    assert.deepStrictEqual(updated.body,updateBlog)
 })
 
 after (async () => {
