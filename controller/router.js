@@ -9,7 +9,17 @@ route.get('/', async (request, response) => {
   })
   
 route.post('/', async (request, response) => {
-    const blog = new Blog(request.body)
+    const { title, author, url, likes } = request.body  
+    modifiedLikes = likes !== undefined ? likes : 0
+    
+    newBlog ={
+      title:title,
+      author:author,
+      url:url,
+      likes:modifiedLikes
+    }
+    
+    const blog = new Blog(newBlog)
     const result = await blog.save()
     response.status(201).json(result)
 

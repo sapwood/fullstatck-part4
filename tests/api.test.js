@@ -108,6 +108,22 @@ test.only('Test add to the database', async () => {
     
 })
 
+test.only('Test likes value', async () => {
+    const blog = {    
+
+        title: "This is a test",
+        author: "Brian",
+        url: "http://howmao.com/",
+            
+    }
+    const response =   await api.post('/api/blogs')
+                                .send(blog)
+                                .expect(201)
+
+    assert.strictEqual(response.body.likes,0)
+
+})
+
 after (async () => {
     await mongoose.connection.close()
 })
