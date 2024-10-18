@@ -78,6 +78,15 @@ test.only('Test of amount of blogs', async () => {
     assert.strictEqual(blogs.body.length,initialData.length)
 })
 
+test.only('Test the unique identifier id', async () => {
+    const blogs = await api.get('/api/blogs')
+    blogs.body.forEach(blog => {
+        assert.ok(blog.id,'id defined')
+        assert.strictEqual(blog._id,undefined,'_id undefined')
+
+    })
+})
+
 after (async () => {
     await mongoose.connection.close()
 })
