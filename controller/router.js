@@ -30,5 +30,9 @@ route.post('/', async (request, response) => {
 
   })
 
+route.delete('/:id', async (request,response) => {
+  const deteled = await Blog.findByIdAndDelete(request.params.id)
+  response.status(204).json(deteled)
+})
 
 module.exports = route

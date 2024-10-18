@@ -134,6 +134,12 @@ test.only('Test missing title and url', async () => {
 
 })
 
+test.only('Test delete from database', async () => {
+    const id = '5a422ba71b54a676234d17fb'
+    await api.delete(`/api/blogs/${id}`)
+            .expect(204)
+})
+
 after (async () => {
     await mongoose.connection.close()
 })
