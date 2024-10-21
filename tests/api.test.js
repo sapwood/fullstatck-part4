@@ -69,16 +69,16 @@ test.only('Test of return json', async () => {
             .expect(200)
             .expect('Content-Type',/application\/json/)
 
-
+  
 })
 
-test.only('Test of amount of blogs', async () => {
+test('Test of amount of blogs', async () => {
     const blogs = await Blog.find({})
     assert.strictEqual(blogs.length,initialData.length)
     
 })
 
-test.only('Test the unique identifier id', async () => {
+test('Test the unique identifier id', async () => {
     const blogs = await api.get('/api/blogs')
     blogs.body.forEach(blog => {
         assert.ok(blog.id,'id defined')
@@ -87,7 +87,7 @@ test.only('Test the unique identifier id', async () => {
     })
 })
 
-test.only('Test add to the database', async () => {
+test('Test add to the database', async () => {
     const blog = {    
 
         title: "This is a test",
@@ -107,7 +107,7 @@ test.only('Test add to the database', async () => {
     
 })
 
-test.only('Test likes value', async () => {
+test('Test likes value', async () => {
     const blog = {    
 
         title: "This is a test",
@@ -123,7 +123,7 @@ test.only('Test likes value', async () => {
 
 })
 
-test.only('Test missing title and url', async () => {
+test('Test missing title and url', async () => {
     const blog = {    
         author: "Brian",             
     }
@@ -133,13 +133,13 @@ test.only('Test missing title and url', async () => {
 
 })
 
-test.only('Test delete from database', async () => {
+test('Test delete from database', async () => {
     const id = '5a422ba71b54a676234d17fb'
     await api.delete(`/api/blogs/${id}`)
             .expect(204)
 })
 
-test.only('Test update database', async () => {
+test('Test update database', async () => {
     const updateBlog = {
         id: "5a422a851b54a676234d17f7",
         title: "React patterns",
@@ -152,6 +152,19 @@ test.only('Test update database', async () => {
 
    
     assert.deepStrictEqual(updated.body,updateBlog)
+})
+
+test.only('add new blog with user', async () => {
+  const newBlog = {
+      title : 'This is a test with user',
+      author : 'Brian',
+      url : 'https://howmao.com',
+      likes : 10,
+      user_id: '6716df62fd702bfe1ed107b6'
+  }
+  await api.post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
 })
 
 after (async () => {

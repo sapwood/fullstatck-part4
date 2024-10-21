@@ -54,8 +54,17 @@ describe('Two users in db',  () => {
         const result = await api.post('/api/users')
             .send(newUser)
             .expect(400)
-        console.log(`error is ${result.body}`)
+        
     })
+
+    test.only('get all users', async () => {
+        const result = await api.get('/api/users')
+                        .expect(200)
+                        .expect('Content-Type',/application\/json/)
+        console.log(result.body)
+    })
+
+
 })
 
 
