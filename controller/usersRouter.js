@@ -9,16 +9,28 @@ userRouter.get('/', async (request,response) => {
     return response.status(200).json(users)
 })
 
-userRouter.post('/', async (request,response) => {
-    const {username, name, password } = request.body
-    const passwordHash = bcrypt.hashSync(password,10)
-    const newUser =new User({
-        username,
-        name,
-        passwordHash
-    })
-    const savedUser = await newUser.save()
-    return response.status(201).json(savedUser)
+userRouter.post('/', async (request,response,next) => {
+    try {
+        const {username, name, password } = request.body
+        if (!(password&&(password.length>3))){
+            console.log(`password is ${password}`)
+            return  response.status(400).json({
+                error: 'Invalid user'
+            })
+        }
+        const passwordHash = bcrypt.hashSync(password,10)
+        const newUser =new User({
+            username,
+            name,
+            passwordHash
+        })
+        const savedUser = await newUser.save()
+        return response.status(201).json(savedUser)
+    }
+    catch(error){
+        next(error)
+    }
+
 })
 
 module.exports = userRouter
