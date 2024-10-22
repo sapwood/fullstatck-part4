@@ -2,6 +2,7 @@ const route = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
+const { error } = require('../utils/logger')
 
 
 
@@ -55,9 +56,29 @@ route.post('/', async (request, response,next) => {
     }
   })
 
-route.delete('/:id', async (request,response) => {
-  const deteled = await Blog.findByIdAndDelete(request.params.id)
-  response.status(204).json(deteled)
+route.delete('/:id', async (request,response,next) => {
+  try {
+    const decodedToken =  jwt.verify(request.token,process.env.SECRET)
+    if (!decodedToken.id){
+      return response.status(400).json({
+        error: 'invalid token'
+      })
+    }
+    const blog = await Blog.findById(request.params.id)
+   
+    if (blog.user.toString()!==decodedToken.id){
+      return response.status(403).json({
+        error:'no permission'
+      })
+    }
+    
+    const deteled = await Blog.findByIdAndDelete(request.params.id)
+    response.status(204).json(deteled)
+  }
+  catch(error){
+    next(error)
+  }
+
 })
 
 route.put('/:id', async (request,response) => {
