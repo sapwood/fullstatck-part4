@@ -24,8 +24,10 @@ app.use(middleware.requestLogger)
 
 const route = require('./controller/router')
 const userRouter = require('./controller/usersRouter')
+const loginRouter = require('./controller/login')
 app.use('/api/blogs',route)
 app.use('/api/users',userRouter)
+app.use('/api/login',loginRouter)
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
