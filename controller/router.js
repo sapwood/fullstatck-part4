@@ -4,13 +4,7 @@ const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 
 
-const getTokenForm = (request) => {
-  const authorization = request.get('authorization')
-  if (authorization && authorization.startsWith('Bearer ')){
-      return authorization.replace('Bearer ','')
-  }
-  return null
-}
+
 
 
 route.get('/', async (request, response) => {
@@ -22,7 +16,7 @@ route.get('/', async (request, response) => {
 route.post('/', async (request, response,next) => {
    
   try {
-    const decodedToken = jwt.verify(getTokenForm(request),process.env.SECRET) 
+    const decodedToken = jwt.verify(request.token,process.env.SECRET) 
     if (!decodedToken.id){
       return response.status(400).json({
         error: 'invalid token'

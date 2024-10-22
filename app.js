@@ -21,10 +21,12 @@ mongoose.connect(url)
 app.use(cors())
 app.use(express.json())
 app.use(middleware.requestLogger)
+app.use(middleware.tokenExtractor)
 
 const route = require('./controller/router')
 const userRouter = require('./controller/usersRouter')
 const loginRouter = require('./controller/login')
+
 app.use('/api/blogs',route)
 app.use('/api/users',userRouter)
 app.use('/api/login',loginRouter)
