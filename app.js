@@ -27,7 +27,8 @@ const route = require('./controller/router')
 const userRouter = require('./controller/usersRouter')
 const loginRouter = require('./controller/login')
 
-app.use('/api/blogs',middleware.userExtractor,route)
+
+app.use('/api/blogs',route)
 app.use('/api/users',userRouter)
 app.use('/api/login',loginRouter)
 

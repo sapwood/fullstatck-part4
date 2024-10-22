@@ -57,7 +57,7 @@ describe('Two users in db',  () => {
         
     })
 
-    test.only('get all users', async () => {
+    test('get all users', async () => {
         const result = await api.get('/api/users')
                         .expect(200)
                         .expect('Content-Type',/application\/json/)

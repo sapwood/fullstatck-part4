@@ -5,6 +5,8 @@ const supertest = require('supertest')
 const api = supertest(app)
 const mongoose = require('mongoose')
 const Blog = require('../models/blog')
+const jwt = require('jsonwebtoken')
+const User = require('../models/user')
 
 const initialData = [
     {
@@ -64,7 +66,7 @@ beforeEach (async () => {
     await Promise.all(promises)
 })  
 
-test.only('Test of return json', async () => {
+test('Test of return json', async () => {
     await api.get('/api/blogs')
             .expect(200)
             .expect('Content-Type',/application\/json/)
@@ -87,7 +89,20 @@ test('Test the unique identifier id', async () => {
     })
 })
 
-test('Test add to the database', async () => {
+test('Test add to the database with token', async () => {
+    const username = 'admin'
+
+    const user = await User.findOne({username})
+    
+    const userForToken ={
+      username: username,
+      id : user._id
+    }
+    
+
+    const token = jwt.sign(userForToken,process.env.SECRET,{expiresIn:60*60})
+
+   
     const blog = {    
 
         title: "This is a test",
@@ -98,13 +113,34 @@ test('Test add to the database', async () => {
 
     const current_length = (await Blog.find({})).length
     const response =   await api.post('/api/blogs')
+                                .set('Authorization',`Bearer ${token}`)
                                 .send(blog)
                                 .expect(201)
+    const result = await Blog.find({})
+    
     const increased_length = (await Blog.find({})).length
     assert.strictEqual(increased_length,current_length+1)
     assert.strictEqual(response.body.title,'This is a test')
 
     
+})
+
+test('Test failed adding to the database without token', async () => {
+ 
+  const blog = {    
+
+      title: "This is a test",
+      author: "Brian",
+      url: "http://howmao.com/",
+      likes: 3,    
+  }
+
+  
+  const response =   await api.post('/api/blogs')
+                              .send(blog)
+                              .expect(401)
+ 
+  
 })
 
 test('Test likes value', async () => {
@@ -154,7 +190,7 @@ test('Test update database', async () => {
     assert.deepStrictEqual(updated.body,updateBlog)
 })
 
-test.only('add new blog with user', async () => {
+test('add new blog with user', async () => {
   const newBlog = {
       title : 'This is a test with user',
       author : 'Brian',

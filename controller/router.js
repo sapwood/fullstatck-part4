@@ -3,6 +3,7 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 const { error } = require('../utils/logger')
+const middleware = require('../utils/middleware')
 
 
 
@@ -14,7 +15,7 @@ route.get('/', async (request, response) => {
 
   })
   
-route.post('/', async (request, response,next) => {
+route.post('/', middleware.userExtractor, async (request, response,next) => {
    
   try {
 
@@ -42,6 +43,7 @@ route.post('/', async (request, response,next) => {
     
     const blog = new Blog(newBlog)
     const result = await blog.save()
+   
     user.blog = user.blog.concat(blog._id)
     await user.save()
     response.status(201).json(result)
@@ -51,7 +53,7 @@ route.post('/', async (request, response,next) => {
     }
   })
 
-route.delete('/:id', async (request,response,next) => {
+route.delete('/:id', middleware.userExtractor, async (request,response,next) => {
   try {
     const user = request.user
     const blog = await Blog.findById(request.params.id)
