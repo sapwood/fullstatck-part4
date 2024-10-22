@@ -1,6 +1,17 @@
 const route = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const jwt = require('jsonwebtoken')
+
+
+const getTokenForm = (request) => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.startsWith('Bearer ')){
+      return authorization.replace('Bearer ','')
+  }
+  return null
+}
+
 
 route.get('/', async (request, response) => {
     const blogs = await Blog.find({}).populate('user',{username:1,name:1})
@@ -8,8 +19,16 @@ route.get('/', async (request, response) => {
 
   })
   
-route.post('/', async (request, response) => {
-    const { title, author, url, likes, user_id } = request.body  
+route.post('/', async (request, response,next) => {
+   
+  try {
+    const decodedToken = jwt.verify(getTokenForm(request),process.env.SECRET) 
+    if (!decodedToken.id){
+      return response.status(400).json({
+        error: 'invalid token'
+      })
+    }
+    const { title, author, url, likes } = request.body  
 
     if (!(title&&url)){
       return response.status(400).json({
@@ -17,10 +36,11 @@ route.post('/', async (request, response) => {
       })
     }
     
+
+
     modifiedLikes = likes !== undefined ? likes : 0
-    const user = await User.findById(user_id)
-    console.log(`the user id is ${user_id}`)
-    console.log(`user is ${user}`)
+    const user = await User.findById(decodedToken.id)
+
 
     const newBlog ={
       title : title,
@@ -35,7 +55,10 @@ route.post('/', async (request, response) => {
     user.blog = user.blog.concat(blog._id)
     await user.save()
     response.status(201).json(result)
-
+  }
+    catch(error){
+      next(error)
+    }
   })
 
 route.delete('/:id', async (request,response) => {

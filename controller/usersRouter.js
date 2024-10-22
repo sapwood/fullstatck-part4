@@ -32,5 +32,17 @@ userRouter.post('/', async (request,response,next) => {
     }
 
 })
+userRouter.put('/:id', async (request, response) => {
+    const body = request.body
+    const passwordHash = await bcrypt.hashSync(body.password)
+    
+    const newUser = {
+        username : body.username,
+        name : body.name,
+        passwordHash :  passwordHash
+    }
+    const updatedUser = await User.findByIdAndUpdate(request.params.id,newUser,{new:true})
+    response.status(201).json(updatedUser)
+})
 
 module.exports = userRouter
