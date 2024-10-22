@@ -17,12 +17,7 @@ route.get('/', async (request, response) => {
 route.post('/', async (request, response,next) => {
    
   try {
-    const decodedToken = jwt.verify(request.token,process.env.SECRET) 
-    if (!decodedToken.id){
-      return response.status(400).json({
-        error: 'invalid token'
-      })
-    }
+
     const { title, author, url, likes } = request.body  
 
     if (!(title&&url)){
@@ -34,8 +29,8 @@ route.post('/', async (request, response,next) => {
 
 
     modifiedLikes = likes !== undefined ? likes : 0
-    const user = await User.findById(decodedToken.id)
-
+    const user = request.user
+    
 
     const newBlog ={
       title : title,
@@ -58,15 +53,10 @@ route.post('/', async (request, response,next) => {
 
 route.delete('/:id', async (request,response,next) => {
   try {
-    const decodedToken =  jwt.verify(request.token,process.env.SECRET)
-    if (!decodedToken.id){
-      return response.status(400).json({
-        error: 'invalid token'
-      })
-    }
+    const user = request.user
     const blog = await Blog.findById(request.params.id)
    
-    if (blog.user.toString()!==decodedToken.id){
+    if (blog.user.toString()!==user.id){
       return response.status(403).json({
         error:'no permission'
       })
